@@ -3,7 +3,7 @@ import Container from "../Container";
 import allImages from "@/helper/imagesProvider";
 import Images from "../Images";
 import { navItems, quickLinks } from "@/helper/projectArrayObj";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import allIcons from "@/helper/iconProvider";
 import NavDownImg from "@/assets/images/nav-dropImage.png";
 import Button from "../Button";
@@ -16,6 +16,9 @@ import useBrandItems from "@/store/Brand";
 import usePriceValue from "@/store/PriceRanger";
 
 const NavbarLg = () => {
+  // for navigate
+  const navigate = useNavigate();
+
   // for handle event and manage state by justand & useState
   const setMaxValue = usePriceValue((state) => state.setMaxValue);
   const setBrandValue = useBrandItems((state) => state.setBrandValue);
@@ -38,6 +41,7 @@ const NavbarLg = () => {
     setMaxValue(1000000);
     setBrandValue([]);
     setCategoryItem("");
+    navigate("/shop");
   };
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -46,6 +50,7 @@ const NavbarLg = () => {
       setMaxValue(1000000);
       setBrandValue([]);
       setCategoryItem("");
+      navigate("/shop");
     }
   };
 
@@ -64,7 +69,7 @@ const NavbarLg = () => {
   }, [searchValue]);
 
   // for icon and images
-  const { navLogo } = allImages;
+  const { navLogo, shopBanner } = allImages;
   const { navIconItems, close } = allIcons;
 
   // for manage state
@@ -233,7 +238,7 @@ const NavbarLg = () => {
                               <div className="col-span-3 relative ">
                                 <Images
                                   imgAlt={"navdropDownImage"}
-                                  imgSrc={NavDownImg}
+                                  imgSrc={shopBanner}
                                   className={"w-[410px] h-[450px] object-cover"}
                                 />
                                 <div className=" absolute bottom-[30px] left-[30px]">
@@ -241,12 +246,14 @@ const NavbarLg = () => {
                                     NEW <br />
                                     HORIZONS
                                   </h4>
-                                  <Button
-                                    btnText={"SHOP NOW"}
-                                    className={
-                                      " mt-[2px] relative  after:absolute after:content-[''] after:w-[40%] after:h-[2px] after:bg-head after:bottom-[-1px] after:left-0 hover:after:w-full  after:duration-500 after:ease-in-out"
-                                    }
-                                  />
+                                  <Link to={"/shop"}>
+                                    <Button
+                                      btnText={"SHOP NOW"}
+                                      className={
+                                        " mt-[2px] relative  after:absolute after:content-[''] after:w-[40%] after:h-[2px] after:bg-head after:bottom-[-1px] after:left-0 hover:after:w-full  after:duration-500 after:ease-in-out"
+                                      }
+                                    />
+                                  </Link>
                                 </div>
                               </div>
                             </div>
