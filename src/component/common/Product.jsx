@@ -1,86 +1,97 @@
-import React, { useState } from "react";
+import React from "react";
 import Images from "./Images";
 import { FaHeart } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import useWishlistStore from "@/store/wishlist";
 
 const Product = ({
   imgSrc,
   imgAlt,
-  category, // typo fix: catagory -> category
+  catagory,
   itemName,
   itemPrice,
   discountPrice,
+  id,
+  product,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const addToWishlist = useWishlistStore((state) => state.addToWishlist);
+  const removeFromWishlist = useWishlistStore(
+    (state) => state.removeFromWishlist,
+  );
+  const isLiked = useWishlistStore((state) =>
+    state.wishlistItems.some((i) => i.id === id),
+  );
+
+  const handleWishlist = () => {
+
+
+    if (isLiked) {
+      removeFromWishlist(id);
+    } else {
+      const itemToAdd = product || {
+        id,
+        title: itemName,
+        price: itemPrice,
+        category: catagory,
+        thumbnail: imgSrc,
+      };
+     
+      addToWishlist(itemToAdd);
+       
+    }
+  };
 
   return (
-    <div className="relative w-full max-w-[330px] group">
-
-      {/* IMAGE */}
-      <div className="relative overflow-hidden bg-gray-200">
-
-        <Images
-          imgSrc={imgSrc}
-          imgAlt={imgAlt}
-          className="w-full h-[250px] object-cover"
-        />
-
-        {/* ADD TO CART */}
-        <Link
-          to="/shop-single"
-          className="absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2 translate-y-[20%]
-          bg-black text-white text-center whitespace-nowrap
-          py-3 text-sm font-medium
-          opacity-0 transition duration-500 ease-in-out
-          group-hover:translate-y-0 group-hover:opacity-100"
-        >
-          ADD TO CART
-        </Link>
-
-      </div>
-
-      {/* PRODUCT INFO */}
-      <div className="mt-3.5">
-
-        {/* CATEGORY + LIKE */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">{category}</p>
-
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className="cursor-pointer"
-            aria-label="Toggle wishlist"
+    <>
+      <div className="lg:max-w-82.5 w-full h-fit  relative group shadow-[0_4px_16px_rgba(99,102,241,0.15)]">
+        <div className="relative overflow-hidden ">
+          <Images
+            className={"w-[250px] object-cover"}
+            imgSrc={imgSrc}
+            imgAlt={imgAlt}
+          />
+          {/* Add To Cart Start */}
+          <Link
+            to={`/shop-single/${id}`}
+            className="texts_14_medium text-white bg-head w-full pt-4 pb-2.5 text-center absolute bottom-0 lg:bottom-4 left-1/2 -translate-x-1/2 lg:opacity-0 lg:translate-y-[50%] lg:group-hover:opacity-100 lg:group-hover:translate-y-0 ease-in-out duration-500 whitespace-nowrap cursor-pointer"
           >
-            <FaHeart
-              size={14}
-              className={isLiked ? "text-red-500" : "text-gray-400"}
-            />
-          </button>
+            ADD TO CART
+          </Link>
+          {/* Add To Cart End*/}
         </div>
-
-        {/* NAME */}
-        <p className="pt-1 text-base text-black line-clamp-2">
-          {itemName}
-        </p>
-
-        {/* PRICE */}
-        <div className="flex items-center gap-2 mt-1">
-          {discountPrice ? (
-            <>
-              <p className="text-sm text-gray-400 line-through">
-                ${itemPrice}
-              </p>
-              <p className="text-sm font-bold text-red-500">
-                ${discountPrice}
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-black">${itemPrice}</p>
-          )}
+        {/* Product Description Start */}
+        <div className="mt-3.5 px-5 pb-3">
+          <div className="flex justify-between items-center">
+            <p className="texts_14_regular text-second">{catagory}</p>
+            <div onClick={handleWishlist} className="cursor-pointer">
+              {isLiked ? (
+                <FaHeart className="text-red cursor-pointer" size={14} />
+              ) : (
+                <FaHeart className="text-second cursor-pointer" size={14} />
+              )}
+            </div>
+          </div>
+          <p className="texts_16_regular truncate text-head pt-0.5 line-clamp-2">
+            {itemName}
+          </p>
+          <div className="flex gap-2 items-center">
+            {discountPrice ? (
+              <>
+                <p className="texts_16_regular text-second line-through">
+                  ${itemPrice}
+                </p>
+                <p className="texts_16_regular text-red font-bold">
+                  ${discountPrice}
+                </p>
+              </>
+            ) : (
+              <p className="texts_16_regular text-head">${itemPrice}</p>
+            )}
+          </div>
         </div>
-
+        {/* Product Description End */}
       </div>
-    </div>
+    </>
   );
 };
 
