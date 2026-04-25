@@ -1,0 +1,578 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@import "shadcn/tailwind.css";
+
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+/* for all typohgraphy and color */
+@layer base {
+  body {
+    font-family: "Jost", sans-serif;
+    @apply bg-background text-foreground;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+.container {
+  @apply max-w-352.5 mx-auto;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #e4e4e4;
+  border-radius: 10px;
+}
+@theme {
+  /* for color */
+
+  --color-head: #222222;
+  --color-red: #d6001c;
+  --color-second-red: #c32929;
+  --color-second: #767676;
+  --color-white: #ffffff;
+  --color-third: #b9a16b;
+
+  /* for Background */
+  --color-primary: #faf9f8;
+  --color-slide: #f5e6e0;
+  --color-secondbg: #eeeeee;
+  --color-footer: #e4e4e4;
+}
+
+@theme {
+  /* for color */
+
+  --color-head: #222222;
+  --color-red: #d6001c;
+  --color-second-red: #c32929;
+  --color-second: #767676;
+  --color-white: #ffffff;
+  --color-third: #b9a16b;
+
+  /* for Background */
+  --color-primary: #faf9f8;
+  --color-slide: #f5e6e0;
+  --color-secondbg: #eeeeee;
+  --color-footer: #e4e4e4;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+.head_70_bold {
+  @apply font-bold text-[clamp(30px,5vw+16px,70px)];
+  line-height: clamp(38px, 5vw + 22px, 80px);
+}
+
+.head_70_regular {
+  @apply font-normal text-[clamp(30px,5vw+16px,70px)];
+  line-height: clamp(38px, 5vw + 22px, 80px);
+}
+
+.head_35_regular {
+  @apply font-normal text-[clamp(24px,2.5vw+12px,35px)];
+}
+
+.head_30_bold {
+  @apply font-bold text-[clamp(22px,2vw+12px,35px)];
+  line-height: clamp(28px, 2vw + 18px, 40px);
+}
+
+.head_35_bold {
+  @apply font-bold text-[clamp(24px,2.5vw+12px,35px)];
+}
+
+.head_26_bold {
+  @apply font-bold text-[clamp(20px,1.5vw+12px,26px)];
+}
+
+.head_26_medium {
+  @apply font-medium text-[clamp(20px,1.5vw+12px,26px)];
+}
+
+.head_26_regular {
+  @apply font-normal text-[clamp(20px,1.5vw+12px,26px)];
+}
+
+/* ── TEXT ── */
+
+.texts_18_medium {
+  @apply font-medium text-[clamp(16px,0.5vw+14px,18px)];
+}
+
+.texts_18_regular {
+  @apply font-normal text-[clamp(16px,0.5vw+14px,18px)];
+}
+
+.texts_16_medium {
+  @apply font-medium text-[clamp(15px,0.25vw+14px,16px)];
+}
+
+.texts_16_regular {
+  @apply font-normal text-[clamp(15px,0.25vw+14px,16px)];
+}
+
+.texts_15_medium {
+  @apply font-medium text-[clamp(14px,0.25vw+13px,15px)];
+}
+
+.texts_15_regular {
+  @apply font-normal text-[clamp(14px,0.25vw+13px,15px)];
+}
+
+.texts_14_medium {
+  @apply font-medium text-[clamp(13px,0.2vw+12px,14px)];
+  line-height: 24px;
+}
+
+.texts_14_regular {
+  @apply font-normal text-[clamp(13px,0.2vw+12px,14px)];
+  line-height: 24px;
+}
+
+.texts_13_regular {
+  @apply font-normal text-[clamp(12px,0.2vw+11px,13px)];
+  line-height: 24px;
+}
+
+.table-head th {
+  @apply font-medium text-[clamp(13px,0.2vw+12px,14px)] text-[#222];
+  line-height: 24px;
+}
+
+/* for input css */
+
+input:focus-visible {
+  outline: none;
+}
+/* for normal input css */
+.input-container {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 21px 22px 15px 22px;
+  border: 2px solid #e4e4e4;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.label {
+  position: absolute;
+  left: 18px;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-family: "Jost", sans-serif;
+  transition-duration: 300ms;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #767676;
+}
+
+.input:focus ~ .label,
+.input:not(:placeholder-shown) ~ .label {
+  top: 0;
+  font-size: 12px;
+  color: #222222;
+}
+
+/* for select input css */
+.select-container {
+  position: relative;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  border: 2px solid #e4e4e4;
+  padding: 18px 22px;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  outline: none;
+  background-color: transparent;
+}
+
+.select:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.select-label {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #767676;
+  transition-duration: 300ms;
+}
+
+.select:focus ~ .select-label,
+.select:valid ~ .select-label {
+  top: 0;
+  font-size: 12px;
+  color: #222222;
+}
+
+/* for textarea */
+.textarea-container {
+  position: relative;
+}
+
+.textarea {
+  width: 100%;
+  padding: 17px;
+  border: 1px solid #e4e4e4;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 213px;
+}
+
+.textarea:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.textarea-label {
+  position: absolute;
+  left: 18px;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-family: "Jost", sans-serif;
+  transition-duration: 300ms;
+  top: 21px;
+  transform: translateY(0);
+  font-size: 14px;
+  color: #767676;
+}
+
+.textarea:focus ~ .textarea-label,
+.textarea:not(:placeholder-shown) ~ .textarea-label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #222222;
+}
+
+/* for scrollbar */
+
+::-webkit-scrollbar{
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: transparent;
+}
+
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+
+.dashed-border {
+  border: none;
+  background:
+    /* Top */
+    repeating-linear-gradient(90deg, #222222 0 8px, transparent 8px 14px) top
+      left / 100% 1px no-repeat,
+    /* Bottom */
+    repeating-linear-gradient(90deg, #222222 0 8px, transparent 8px 14px) bottom
+      left / 100% 1px no-repeat,
+    /* Left - 1px offset top & bottom */
+    repeating-linear-gradient(180deg, #222222 0 8px, transparent 8px 14px) 0
+      1px / 1px calc(100% - 2px) no-repeat,
+    /* Right - 1px offset top & bottom */
+    repeating-linear-gradient(180deg, #222222 0 8px, transparent 8px 14px) 100%
+      1px / 1px calc(100% - 2px) no-repeat;
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --font-sans: "Geist Variable", sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* for normal input css */
+.input-container {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 21px 22px 15px 22px;
+  border: 2px solid #e4e4e4;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.label {
+  position: absolute;
+  left: 18px;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-family: "Jost", sans-serif;
+  transition-duration: 300ms;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #767676;
+}
+
+.input:focus ~ .label,
+.input:not(:placeholder-shown) ~ .label {
+  top: 0;
+  font-size: 12px;
+  color: #222222;
+}
+
+/* for select input css */
+.select-container {
+  position: relative;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  border: 2px solid #e4e4e4;
+  padding: 18px 22px;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  outline: none;
+  background-color: transparent;
+}
+
+.select:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.select-label {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #767676;
+  transition-duration: 300ms;
+}
+
+.select:focus ~ .select-label,
+.select:valid ~ .select-label {
+  top: 0;
+  font-size: 12px;
+  color: #222222;
+}
+
+/* for textarea */
+.textarea-container {
+  position: relative;
+}
+
+.textarea {
+  width: 100%;
+  padding: 21px 22px 15px 22px;
+  border: 1px solid #e4e4e4;
+  font-size: 14px;
+  font-family: "Jost", sans-serif;
+  color: #222222;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.textarea:focus {
+  border-color: #222222;
+  box-shadow: 0 0 0 1px #222222;
+}
+
+.textarea-label {
+  position: absolute;
+  left: 18px;
+  pointer-events: none;
+  background-color: white;
+  padding: 0 4px;
+  font-family: "Jost", sans-serif;
+  transition-duration: 300ms;
+
+  top: 21px;
+  transform: translateY(0);
+  font-size: 14px;
+  color: #767676;
+}
+
+.textarea:focus ~ .textarea-label,
+.textarea:not(:placeholder-shown) ~ .textarea-label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #222222;
+}
+
+/* Terms & Conditions */
