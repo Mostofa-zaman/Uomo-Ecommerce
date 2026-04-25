@@ -8,8 +8,8 @@ const Navbar = () => {
   // for locations
   const { pathname } = useLocation();
 
-  // for images
-  const { notFoundPage } = allImages;
+ 
+
 
   return (
     <div className="fixed top-0 left-0 w-full z-[800] ">
