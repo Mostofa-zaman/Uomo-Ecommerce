@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoSearch } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
@@ -21,6 +21,7 @@ import AddToCart from "@/component/shopMain/addToCart/AddToCart";
 import useSearchingItems from "@/store/searchingItems";
 import usePriceValue from "@/store/PriceRanger";
 import useBrandItems from "@/store/Brand";
+import useCategory from "@/store/category";
 
 const socialIcons = [
   { id: 1, icon: FaFacebookF, link: "https://www.facebook.com" },
@@ -56,6 +57,8 @@ const DrawerHeader = ({ onClose, navLogo, cartBadge, onCartClick }) => (
 );
 
 const DrawerSearch = () => {
+  // for navigate
+  const navigate = useNavigate();
   // for handle event and manage state by justand & useState
 
   const searchValues = useSearchingItems((state) => state.searchValues);
@@ -69,6 +72,7 @@ const DrawerSearch = () => {
   // for handle event and manage state by justand & useState
   const setMaxValue = usePriceValue((state) => state.setMaxValue);
   const setBrandValue = useBrandItems((state) => state.setBrandValue);
+  const setCategoryItem = useCategory((state) => state.setCategoryItem);
 
   const handleChangeSearch = (e) => {
     setSearchValue(e.target.value);
@@ -77,10 +81,10 @@ const DrawerSearch = () => {
   const handleChangeClicked = () => {
     setCatchDebounchValue(debounchValue);
     setSearchValue("");
-
     setMaxValue(1000000);
     setBrandValue([]);
     setCategoryItem("");
+    navigate("/shop");
   };
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -89,6 +93,7 @@ const DrawerSearch = () => {
       setMaxValue(1000000);
       setBrandValue([]);
       setCategoryItem("");
+      navigate("/shop");
     }
   };
 
