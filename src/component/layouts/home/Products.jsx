@@ -5,7 +5,7 @@ import Button from "@/component/common/Button";
 import Container from "@/component/common/Container";
 import useAllProductThirty from "@/coustomHook/useAllProductThirty";
 import { homeTrendyFilters } from "@/helper/projectArrayObj";
-import ProductSkeleton from "@/component/common/ProductSkeleton";
+import ProductSkeleton from "@/component/common/skeleton/ProductSkeleton";
 import NotFound from "@/page/NotFound";
 import { Link } from "react-router-dom";
 
@@ -105,10 +105,12 @@ const Products = () => {
                 <div key={index} className={`mix ${categoryClasses}`}>
                   <Product
                     imgSrc={items?.thumbnail}
-                    imgAlt={items.title}
-                    catagory={items.category}
-                    itemName={items.title}
-                    itemPrice={items.price}
+                    imgAlt={items?.title}
+                    catagory={items?.category}
+                    itemName={items?.title}
+                    itemPrice={items?.price}
+                    id={items?.id}
+                    product={items}
                   />
                 </div>
               );
