@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const DashboardDownload = () => {
   const downloads = [
@@ -69,25 +69,20 @@ const DashboardDownload = () => {
       <div className="block md:hidden space-y-3">
         {downloads.map((item, i) => (
           <div key={i} className="border border-gray-200 p-4 bg-white">
-
-            {/* Card Header */}
             <div className="flex justify-between items-start mb-2">
               <p className="text-gray-800 font-semibold text-sm">{item.product}</p>
             </div>
-
-            {/* Card Body */}
             <p className="text-gray-400 text-xs mb-1">Date: {item.date}</p>
             <p className="text-gray-400 text-xs mb-4">Expires: {item.expires}</p>
             <button className="w-full bg-black text-white text-xs font-semibold tracking-widest py-2.5 hover:bg-gray-800 transition-colors duration-200 cursor-pointer">
               DOWNLOAD
             </button>
-
           </div>
         ))}
       </div>
 
     </div>
-  );
-};
+  )
+}
 
-export default DashboardDownload;
+export default DashboardDownload

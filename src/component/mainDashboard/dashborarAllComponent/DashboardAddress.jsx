@@ -29,7 +29,7 @@ const DashboardAddress = () => {
           The following addresses will be used on the checkout page by default.
         </p>
 
-        {/* Addresses Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 lg:gap-[91px]">
           {addresses.map((address) => (
             <div key={address.id} className="p-4 sm:p-5">
@@ -50,7 +50,6 @@ const DashboardAddress = () => {
               <p className="text-[14px] mb-4">{address.country}</p>
               <p className="text-[14px] mb-1">{address.email}</p>
               <p className="text-[14px]">{address.phone}</p>
-
             </div>
           ))}
         </div>
