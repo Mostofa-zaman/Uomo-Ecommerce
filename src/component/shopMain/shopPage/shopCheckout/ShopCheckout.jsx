@@ -2,14 +2,46 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LiaDollarSignSolid } from "react-icons/lia";
-import  useCartStore  from "../cart/Cart";
 import { FaAngleDown } from "react-icons/fa6";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useCartStore from "@/store/cartSlice";
+
+// ─── Zod Schema ────────────────────────────────────────────────────────────────
+const schema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  company: z.string().optional(),
+  country: z.string().min(1, "Country is required"),
+  streetAddress: z.string().min(1, "Street address is required"),
+  streetAddress2: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  postcode: z.string().min(1, "Postcode is required"),
+  province: z.string().min(1, "Province is required"),
+  phone: z.string().min(1, "Phone is required"),
+  email: z.string().email("Invalid email address"),
+  orderNotes: z.string().optional(),
+  createAccount: z.boolean().optional(),
+  shipDifferent: z.boolean().optional(),
+});
 
 // ─── Main ShopCheckout ─────────────────────────────────────────────────────────
-
 const ShopCheckout = () => {
-  const { items: cartItems } = useCartStore();
+  const cartItems = useCartStore((state) => state.cartItems);
   const [paymentMethod, setPaymentMethod] = useState("bank");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      createAccount: false,
+      shipDifferent: false,
+    },
+  });
 
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -18,29 +50,9 @@ const ShopCheckout = () => {
   const vat = Math.round(subtotal * 0.015);
   const total = subtotal + vat;
 
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    company: "",
-    country: "",
-    streetAddress: "",
-    streetAddress2: "",
-    city: "",
-    postcode: "",
-    province: "",
-    phone: "",
-    email: "",
-    orderNotes: "",
-    createAccount: false,
-    shipDifferent: false,
-  });
-
-  const handle = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const onSubmit = async (data) => {
+    console.log("Order data:", { ...data, paymentMethod, cartItems });
+    // এখানে API call করুন
   };
 
   const inputClass =
@@ -56,28 +68,32 @@ const ShopCheckout = () => {
 
         {/* First / Last */}
         <div className="flex gap-4 lg:gap-7.5 mb-4 lg:mb-7.5 w-full">
-          <input
-            name="firstName"
-            value={form.firstName}
-            onChange={handle}
-            placeholder="First Name"
-            className={inputClass}
-          />
-          <input
-            name="lastName"
-            value={form.lastName}
-            onChange={handle}
-            placeholder="Last Name"
-            className={inputClass}
-          />
+          <div className="flex-1">
+            <input
+              {...register("firstName")}
+              placeholder="First Name"
+              className={inputClass}
+            />
+            {errors.firstName && (
+              <p className="text-red-500 text-[11px] mt-1">{errors.firstName.message}</p>
+            )}
+          </div>
+          <div className="flex-1">
+            <input
+              {...register("lastName")}
+              placeholder="Last Name"
+              className={inputClass}
+            />
+            {errors.lastName && (
+              <p className="text-red-500 text-[11px] mt-1">{errors.lastName.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Company */}
         <div className="mb-4 lg:mb-7.75">
           <input
-            name="company"
-            value={form.company}
-            onChange={handle}
+            {...register("company")}
             placeholder="Company Name (optional)"
             className={inputClass}
           />
@@ -89,9 +105,7 @@ const ShopCheckout = () => {
             Country / Region *
           </label>
           <select
-            name="country"
-            value={form.country}
-            onChange={handle}
+            {...register("country")}
             className="w-full pt-5.25 pb-3.75 px-4 text-sm text-head outline-none bg-white appearance-none cursor-pointer border-2 border-transparent focus:border-2 focus:border-head"
           >
             <option value="">Select a country / region</option>
@@ -103,21 +117,25 @@ const ShopCheckout = () => {
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-second pointer-events-none">
             <FaAngleDown className="text-[10px]" />
           </span>
+          {errors.country && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.country.message}</p>
+          )}
         </div>
 
         {/* Street Address */}
         <div className="mb-4 flex flex-col gap-2.5">
+          <div>
+            <input
+              {...register("streetAddress")}
+              placeholder="Street Address *"
+              className={inputClass}
+            />
+            {errors.streetAddress && (
+              <p className="text-red-500 text-[11px] mt-1">{errors.streetAddress.message}</p>
+            )}
+          </div>
           <input
-            name="streetAddress"
-            value={form.streetAddress}
-            onChange={handle}
-            placeholder="Street Address *"
-            className={inputClass}
-          />
-          <input
-            name="streetAddress2"
-            value={form.streetAddress2}
-            onChange={handle}
+            {...register("streetAddress2")}
             placeholder=""
             className={inputClass}
           />
@@ -126,56 +144,62 @@ const ShopCheckout = () => {
         {/* Town / City */}
         <div className="mb-4">
           <input
-            name="city"
-            value={form.city}
-            onChange={handle}
+            {...register("city")}
             placeholder="Town / City *"
             className={inputClass}
           />
+          {errors.city && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.city.message}</p>
+          )}
         </div>
 
         {/* Postcode */}
         <div className="mb-4">
           <input
-            name="postcode"
-            value={form.postcode}
-            onChange={handle}
+            {...register("postcode")}
             placeholder="Postcode / ZIP *"
             className={inputClass}
           />
+          {errors.postcode && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.postcode.message}</p>
+          )}
         </div>
 
         {/* Province */}
         <div className="mb-4">
           <input
-            name="province"
-            value={form.province}
-            onChange={handle}
+            {...register("province")}
             placeholder="Province *"
             className={inputClass}
           />
+          {errors.province && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.province.message}</p>
+          )}
         </div>
 
         {/* Phone */}
         <div className="mb-4">
           <input
-            name="phone"
-            value={form.phone}
-            onChange={handle}
+            {...register("phone")}
             placeholder="Phone *"
             className={inputClass}
           />
+          {errors.phone && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.phone.message}</p>
+          )}
         </div>
 
         {/* Email */}
         <div className="mb-6">
           <input
-            name="email"
-            value={form.email}
-            onChange={handle}
+            {...register("email")}
+            type="email"
             placeholder="Your Mail"
             className={inputClass}
           />
+          {errors.email && (
+            <p className="text-red-500 text-[11px] mt-1">{errors.email.message}</p>
+          )}
         </div>
 
         {/* Checkboxes */}
@@ -184,15 +208,10 @@ const ShopCheckout = () => {
             { name: "createAccount", label: "CREATE AN ACCOUNT?" },
             { name: "shipDifferent", label: "SHIP TO A DIFFERENT ADDRESS?" },
           ].map((cb) => (
-            <label
-              key={cb.name}
-              className="flex items-center gap-3.25 cursor-pointer"
-            >
+            <label key={cb.name} className="flex items-center gap-3.25 cursor-pointer">
               <input
                 type="checkbox"
-                name={cb.name}
-                checked={form[cb.name]}
-                onChange={handle}
+                {...register(cb.name)}
                 className="w-4 h-4 border border-footer rounded-none accent-head cursor-pointer shrink-0"
               />
               <span className="text-sm text-head font-medium">{cb.label}</span>
@@ -202,9 +221,7 @@ const ShopCheckout = () => {
 
         {/* Order Notes */}
         <textarea
-          name="orderNotes"
-          value={form.orderNotes}
-          onChange={handle}
+          {...register("orderNotes")}
           placeholder="Order Notes (optional)"
           rows={5}
           className="w-full border border-footer px-5.25 pt-5 pb-30 text-sm text-head placeholder:text-second outline-none focus:border-head transition-colors bg-white resize-none"
@@ -309,10 +326,7 @@ const ShopCheckout = () => {
             { value: "cod", label: "Cash on delivery" },
             { value: "paypal", label: "PayPal" },
           ].map((opt) => (
-            <label
-              key={opt.value}
-              className="flex items-center gap-2 cursor-pointer mb-3"
-            >
+            <label key={opt.value} className="flex items-center gap-2 cursor-pointer mb-3">
               <div className="relative w-4 h-4 rounded-full border-2 border-head flex items-center justify-center shrink-0">
                 <div
                   className={`w-2 h-2 rounded-full bg-head transition-opacity ${paymentMethod === opt.value ? "opacity-100" : "opacity-0"}`}
@@ -344,12 +358,13 @@ const ShopCheckout = () => {
         </motion.div>
 
         {/* Place Order Button */}
-        <Link
-          to="/cart/order-recived"
-          className="mt-5 block text-center pt-5.25 pb-3.75 bg-head text-white text-sm font-medium leading-6 hover:bg-[#DB4444] transition-all"
+        <button
+          onClick={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          className="mt-5 w-full block text-center pt-5.25 pb-3.75 bg-head text-white text-sm font-medium leading-6 hover:bg-[#DB4444] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
         >
-          PLACE ORDER
-        </Link>
+          {isSubmitting ? "Placing Order..." : "PLACE ORDER"}
+        </button>
       </div>
     </div>
   );
