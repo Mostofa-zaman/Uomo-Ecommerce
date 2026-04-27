@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 
-// Menu items definition
 const menuItems = [
   { label: "MY ACCOUNT",      path: "/dashboard" },
   { label: "ORDERS",          path: "order" },
@@ -11,7 +10,6 @@ const menuItems = [
   { label: "LOGOUT",          path: "/logout" },
 ];
 
-// Function to get heading based on current pathname
 const getHeading = (pathname) => {
   const matched = menuItems.find((item) => pathname.endsWith(item.path));
   return matched ? matched.label : "My Account";
@@ -23,17 +21,12 @@ const DashborardItems = ({ onClose }) => {
 
   return (
     <div className="shrink-0">
-
-      {/* Heading */}
       <h2 className="font-bold text-[28px] lg:text-[35px] text-[rgb(34,34,34)] mb-6 lg:mb-9">
         {heading}
       </h2>
-
-      {/* Menu List */}
       <ul className="flex flex-col gap-2 lg:gap-3.5">
         {menuItems.map((item) => {
           const isActive = location.pathname.endsWith(item.path);
-
           return (
             <li key={item.path}>
               <Link
@@ -48,7 +41,6 @@ const DashborardItems = ({ onClose }) => {
                 }}
               >
                 {item.label}
-
                 {/* Active underline */}
                 {isActive && (
                   <span className="absolute bottom-0 left-0 w-10 h-0.5 bg-[#C32929]" />
@@ -58,7 +50,6 @@ const DashborardItems = ({ onClose }) => {
           );
         })}
       </ul>
-
     </div>
   );
 };
