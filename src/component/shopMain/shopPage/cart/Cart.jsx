@@ -1,364 +1,302 @@
-import useAllProduct from "@/coustomHook/useAllProduct";
-import allIcons from "@/helper/iconProvider";
-import useBrandItems from "@/store/Brand";
-import useCategory from "@/store/category";
-import usePriceValue from "@/store/PriceRanger";
-import useSearchingItems from "@/store/searchingItems";
-import React, { useEffect, useState } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { IoSearchOutline } from "react-icons/io5";
+import React from "react";
+import { Link } from "react-router-dom";
+import { IoCloseOutline } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiPlus } from "react-icons/fi";
+import { FaMinus } from "react-icons/fa6";
+import { LiaDollarSignSolid } from "react-icons/lia";
+import useCartStore from "@/store/cartSlice";
 
-const XIcon = () => (
-  <svg
-    width="10"
-    height="10"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
+// ─── Main Cart ─────────────────────────────────────────────────────────────────
+const Cart = () => {
+  const cartItems = useCartStore((state) => state.cartItems);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const clearCart = useCartStore((state) => state.clearCart);
 
-const ShopFilter = ({ onClose }) => {
-  // for zustand stroage
-  const setMaxValue = usePriceValue((state) => state.setMaxValue);
-  const setBrandValue = useBrandItems((state) => state.setBrandValue);
-  const setSearchingValue = useSearchingItems(
-    (state) => state.setSearchingValue,
+  const increment = (item) => updateQuantity(item.id, (item.quantity || 1) + 1);
+  const decrement = (item) => {
+    if ((item.quantity || 1) > 1) updateQuantity(item.id, item.quantity - 1);
+  };
+
+  // image বের করার helper
+  const getImage = (item) => {
+    if (item.thumbnail) return item.thumbnail;
+    if (item.image) return item.image;
+    if (item.images?.length > 0) return item.images[0];
+    return "https://placehold.co/80x80/d1d5db/9ca3af";
+  };
+
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * (item.quantity || 1),
+    0,
   );
-  const setCategoryItem = useCategory((state) => state.setCategoryItem);
-  const category = useCategory((state) => state.category);
-
-  const brandValue = useBrandItems((state) => state.brandValue);
-  const maxValue = usePriceValue((state) => state.maxValue);
-
-  const handleCategory = (items) => {
-    setCategoryItem(category === items ? "" : items);
-    setMaxValue(1000000);
-    setBrandValue([]);
-    setSearchingValue("");
-  };
-
-  const {
-    data: allProductData,
-    isError: allProductDataError,
-    isLoading: allProcutDataLoading,
-  } = useAllProduct();
-
-  const uniqueCategories = React.useMemo(() => {
-    if (!allProductData) return [];
-    return [...new Set(allProductData.map((item) => item.category))];
-  }, [allProductData]);
-
-  const { close } = allIcons;
-
-  const [open, setOpen] = useState({
-    categories: true,
-    colors: true,
-    sizes: true,
-    brands: true,
-    price: true,
-  });
-
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  // const [selectedBrands, setSelectedBrands] = useState([]);
-  const [priceMax, setPriceMax] = useState(1000000);
-  const [brandSearch, setBrandSearch] = useState("");
-  const [activeFilters, setActiveFilters] = useState([]);
-  const selectedBrands = useBrandItems((state) => state.brandValue);
-  useEffect(() => {
-    setBrandValue(selectedBrands);
-  }, [selectedBrands]);
-
-  useEffect(() => {
-    setMaxValue(priceMax);
-  }, [priceMax]);
-
-  const toggle = (section) =>
-    setOpen((prev) => ({ ...prev, [section]: !prev[section] }));
-
-  const colors = [
-    { id: "navy", bg: "bg-[#0A2472]" },
-    { id: "gold", bg: "bg-[#D7BB4F]" },
-    { id: "black", bg: "bg-[#282828]" },
-    { id: "lightblue", bg: "bg-[#B1D6E8]" },
-    { id: "brown", bg: "bg-[#9C7539]" },
-    { id: "amber", bg: "bg-[#D29B48]" },
-    { id: "pink", bg: "bg-pink-300" },
-    { id: "red", bg: "bg-red-500" },
-  ];
-
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-
-  const productBrandRefine = (productData) => {
-    if (!productData) return {};
-
-    return productData.reduce((acc, product) => {
-      let brand = product?.brand || "Unknown Brand";
-
-      if (acc[brand]) {
-        acc[brand] = acc[brand] + 1;
-      } else {
-        acc[brand] = 1;
-      }
-
-      return acc;
-    }, {});
-  };
-
-  const filteredBrand = productBrandRefine(allProductData);
-
-  const filteredBrandEntries = Object.entries(filteredBrand).filter(([name]) =>
-    name.toLowerCase().includes(brandSearch.toLowerCase()),
-  );
-
-  const removeFilter = (id) =>
-    setActiveFilters((prev) => prev.filter((f) => f.id !== id));
-
-  const resetFilters = () => {
-    setActiveFilters([]);
-    setSelectedColors([]);
-    setSelectedSizes([]);
-    setSelectedBrands([]);
-    setPriceMax(1000000);
-  };
-
-  const toggleColor = (id) =>
-    setSelectedColors((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
-    );
-
-  const toggleSize = (s) =>
-    setSelectedSizes((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
-    );
-
-  const toggleBrand = (name) => {
-    if (brandValue.includes(name)) {
-      setBrandValue(brandValue.filter((b) => b !== name));
-    } else {
-      setBrandValue([...brandValue, name]);
-    }
-  };
+  const vat = Math.round(subtotal * 0.015);
+  const total = subtotal + vat;
 
   return (
-    <div className="max-w-105 bg-white h-full shadow-lg flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-footer pt-8.25 pb-6.5 pl-10 pr-10 shrink-0">
-        <h3 className="texts_16_medium text-head uppercase">Filter By</h3>
-        <button onClick={onClose} className="text-head text-2xl cursor-pointer">
-          {close}
-        </button>
-      </div>
-
-      {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Product Categories */}
-        <div className="pl-10 pt-9.5 pr-10 pb-4">
-          <button
-            onClick={() => toggle("categories")}
-            className="flex justify-between w-full texts_18_medium text-head uppercase"
-          >
-            Product Categories
-            <span>
-              {open.categories ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            </span>
-          </button>
-          {open.categories && (
-            <div className="grid grid-cols-2 gap-y-2.5 mt-3.5">
-              {uniqueCategories?.map((cat) => {
-                const active = cat === category;
-                return (
-                  <button
-                    key={cat}
-                    className={` capitalize texts_14_medium text-start cursor-pointer  ${
-                      active ? "text-second-red" : "text-head"
-                    }`}
-                    onClick={() => handleCategory(cat)}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        <div className="mx-10" />
-
-        {/* Color */}
-        <div className="pl-10 pt-9.5 pr-10 pb-4">
-          <button
-            onClick={() => toggle("colors")}
-            className="flex justify-between w-full texts_18_medium text-head uppercase"
-          >
-            Color
-            <span>{open.colors ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-          </button>
-          {open.colors && (
-            <div className="flex flex-wrap gap-[25px] mt-[23px]">
-              {colors.map((color) => (
-                <button
-                  key={color.id}
-                  onClick={() => toggleColor(color.id)}
-                  className={`w-4 h-4 rounded-full ${color.bg} cursor-pointer ${
-                    selectedColors.includes(color.id)
-                      ? "ring-2 ring-head ring-offset-3"
-                      : ""
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="mx-10" />
-
-        {/* Sizes */}
-        <div className="pl-10 pt-9.5 pr-10 pb-4">
-          <button
-            onClick={() => toggle("sizes")}
-            className="flex justify-between w-full texts_18_medium text-head uppercase"
-          >
-            Sizes
-            <span>{open.sizes ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-          </button>
-          {open.sizes && (
-            <div className="flex flex-wrap gap-4 mt-[23px]">
-              {sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => toggleSize(size)}
-                  className={`border px-[21px] py-1 texts_14_regular cursor-pointer transition-colors ${
-                    selectedSizes.includes(size)
-                      ? "bg-head text-white border-head"
-                      : "text-head border-footer hover:bg-head hover:text-white"
-                  }`}
+    <>
+      {cartItems.length > 0 ? (
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
+          {/* ── Left ── */}
+          <div className="flex-1 min-w-0 w-full">
+            {/* Table Header — hidden on sm, visible md+ */}
+            <div className="hidden md:grid grid-cols-[3fr_0.8fr_1.2fr_0.8fr_30px] gap-4 pb-2.25">
+              {["PRODUCT", "PRICE", "QUANTITY", "SUBTOTAL", ""].map((h) => (
+                <span
+                  key={h}
+                  className="text-[14px] font-medium leading-6 text-head"
                 >
-                  {size}
-                </button>
+                  {h}
+                </span>
               ))}
             </div>
-          )}
-        </div>
 
-        <div className="mx-10" />
+            {/* Items */}
+            <AnimatePresence mode="popLayout">
+              {cartItems.map((cart, index) => (
+                <motion.div
+                  key={cart.id}
+                  layout
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ delay: index * 0.04 }}
+                  className="
+                    flex flex-col gap-3
+                    md:grid md:grid-cols-[3fr_0.8fr_1.2fr_0.8fr_30px] md:gap-4 md:items-center
+                    py-5 md:py-7.5
+                    border-b border-[#E4E4E4] border-t
+                    relative
+                  "
+                >
+                  {/* Product */}
+                  <div className="flex gap-3 md:gap-4 items-center">
+                    <div className="shrink-0">
+                      <img
+                        className="w-16 h-16 md:w-30 md:h-30 object-cover bg-gray-200 rounded-sm"
+                        src={getImage(cart)}
+                        alt={cart.title || cart.name}
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-[14px] md:text-[16px] font-normal text-head">
+                        {cart.title || cart.name}
+                      </h3>
+                      {cart.color && (
+                        <p className="text-[12px] md:text-[13px] text-gray-500 mt-0.5">
+                          Color: {cart.color}
+                        </p>
+                      )}
+                      {cart.size && (
+                        <p className="text-[12px] md:text-[13px] text-gray-500">
+                          Size: {cart.size}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-        {/* Brands */}
-        <div className="pl-10 pt-9.5 pr-10 pb-4">
-          <button
-            onClick={() => toggle("brands")}
-            className="flex justify-between w-full texts_18_medium text-head uppercase"
-          >
-            Brands
-            <span>{open.brands ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-          </button>
-          {open.brands && (
-            <div className="mt-[23px]">
-              {/* Search */}
-              <div className="relative mb-3">
+                  {/* Price — on mobile show inline label */}
+                  <div className="flex items-center justify-between md:block">
+                    <span className="text-[12px] font-medium text-gray-400 md:hidden">Price</span>
+                    <span className="text-[14px] md:text-[16px] font-normal text-second flex items-center">
+                      <LiaDollarSignSolid />
+                      {cart.price}
+                    </span>
+                  </div>
+
+                  {/* Quantity */}
+                  <div className="flex items-center justify-between md:block">
+                    <span className="text-[12px] font-medium text-gray-400 md:hidden">Quantity</span>
+                    <div className="flex items-center border-2 border-[#E4E4E4] w-27.5 h-10 md:h-12.5">
+                      <button
+                        onClick={() => decrement(cart)}
+                        className="w-9 h-full flex items-center justify-center text-gray-500 hover:text-[#DB4444] text-[14px] md:text-[16px] select-none cursor-pointer"
+                      >
+                        <FaMinus />
+                      </button>
+                      <span className="flex-1 text-center text-[13px] md:text-[14px] select-none">
+                        {cart.quantity || 1}
+                      </span>
+                      <button
+                        onClick={() => increment(cart)}
+                        className="w-9 h-full flex items-center justify-center text-gray-500 hover:text-[#DB4444] text-[14px] md:text-[16px] select-none cursor-pointer"
+                      >
+                        <FiPlus />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Subtotal */}
+                  <div className="flex items-center justify-between md:block">
+                    <span className="text-[12px] font-medium text-gray-400 md:hidden">Subtotal</span>
+                    <span className="text-[14px] md:text-[16px] font-medium flex items-center text-head justify-start">
+                      <LiaDollarSignSolid />
+                      {(cart.price * (cart.quantity || 1)).toFixed(0)}
+                    </span>
+                  </div>
+
+                  {/* Remove */}
+                  <button
+                    onClick={() => removeFromCart(cart.id)}
+                    className="absolute top-4 right-0 md:static text-gray-400 hover:text-[#DB4444] transition-colors cursor-pointer"
+                  >
+                    <IoCloseOutline className="text-[20px]" />
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Bottom actions */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3 mt-6 md:mt-8">
+              {/* Coupon */}
+              <div className="flex items-center border border-[#E4E4E4] h-12 w-full sm:w-92.5 bg-white">
                 <input
                   type="text"
-                  placeholder="Search"
-                  value={brandSearch}
-                  onChange={(e) => setBrandSearch(e.target.value)}
-                  className="border-2 border-footer w-full px-3 py-2.5 texts_14_medium text-head pr-10"
+                  placeholder="Coupon Code"
+                  className="flex-1 pl-4 text-sm text-second outline-none h-full border-none bg-transparent"
                 />
-                <span className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-second">
-                  <IoSearchOutline size={18} />
+                <button className="px-3 md:px-4 h-full text-[12px] md:text-sm font-medium text-head cursor-pointer whitespace-nowrap">
+                  APPLY COUPON
+                </button>
+              </div>
+
+              {/* Update Cart */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={clearCart}
+                className="pt-5.5 pb-3.5 px-6 md:px-13.75 text-sm font-medium text-head bg-[#E4E4E4] hover:bg-[#DB4444] hover:text-white transition-all select-none whitespace-nowrap cursor-pointer"
+              >
+                UPDATE CART
+              </motion.button>
+            </div>
+          </div>
+
+          {/* ── Right: Totals ── */}
+          <div className="w-full lg:w-105 shrink-0">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="border-2 border-head pl-5 md:pl-10.25 pr-5 md:pr-12.5 pt-6 md:pt-9.5 pb-5.5"
+            >
+              <h3 className="text-[15px] md:text-[16px] font-medium leading-[100%] mb-6 md:mb-8 uppercase">
+                Cart Totals
+              </h3>
+
+              {/* Subtotal */}
+              <div className="flex items-center justify-between border-b border-[#E4E4E4] pb-3">
+                <span className="text-sm font-medium text-head leading-6 uppercase">
+                  Subtotal
+                </span>
+                <span className="text-[14px] font-medium flex items-center pb-3.25">
+                  <LiaDollarSignSolid />
+                  {subtotal.toFixed(2)}
                 </span>
               </div>
 
-              <div className="flex flex-col">
-                {filteredBrandEntries.map(([name, count]) => (
-                  <label
-                    key={name}
-                    className="flex justify-between items-center py-2.5 cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2 texts_14_medium text-head">
-                      <input
-                        type="checkbox"
-                        checked={brandValue.includes(name)}
-                        onChange={() => {
-                          toggleBrand(name);
-                          setCategoryItem("");
-                          setMaxValue(1000000);
-                          setSearchingValue("");
-                        }}
-                        className="w-3.5 h-3.5 cursor-pointer accent-head"
-                      />
-                      {name}
+              {/* Shipping */}
+              <div className="pb-5 border-b border-[#E4E4E4]">
+                <div className="flex justify-between items-start">
+                  <span className="text-sm font-medium text-head uppercase pt-3.75">
+                    Shipping
+                  </span>
+                  <div className="flex flex-col items-start space-y-2.5 pt-3.75">
+                    {[
+                      { id: "free", label: "Free shipping" },
+                      { id: "flat", label: "Flat rate: $49" },
+                      { id: "local", label: "Local pickup: $8" },
+                    ].map((opt) => (
+                      <label
+                        key={opt.id}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 border border-gray-300 rounded-none accent-head cursor-pointer shrink-0"
+                        />
+                        <span className="text-sm text-head leading-6 font-medium">
+                          {opt.label}
+                        </span>
+                      </label>
+                    ))}
+                    <span className="text-sm text-head leading-6 font-medium pl-0">
+                      Shipping to AL.
                     </span>
-                    <span className="texts_14_regular text-second">
-                      {count}
-                    </span>
-                  </label>
-                ))}
+                    <button className="texts_14_medium text-head relative after:absolute after:content-[''] after:w-[59%] after:h-0.5 after:bg-head after:-bottom-0.75 after:left-0 hover:after:w-full after:duration-500 after:ease-in-out">
+                      CHANGE ADDRESS
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
 
-        <div className="mx-10" />
-
-        {/* Price */}
-        <div className="pl-10 pt-9.5 pr-10 pb-4">
-          <button
-            onClick={() => toggle("price")}
-            className="flex justify-between w-full texts_18_medium text-head uppercase"
-          >
-            Price
-            <span>{open.price ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-          </button>
-          {open.price && (
-            <div className="mt-[23px]">
-              <input
-                type="range"
-                min="1"
-                max="1000000"
-                value={priceMax}
-                onChange={(e) => setPriceMax(Number(e.target.value))}
-                className="w-full accent-head cursor-pointer"
-              />
-              <div className="flex justify-between texts_14_medium text-head mt-2">
-                <span>Min Price: $1</span>
-                <span>Max: ${priceMax}</span>
+              {/* VAT */}
+              <div className="flex items-center justify-between py-3.5 border-b border-[#E4E4E4]">
+                <span className="text-sm text-head leading-6 font-medium uppercase">
+                  VAT
+                </span>
+                <span className="text-sm text-head leading-6 font-medium">
+                  ${vat}
+                </span>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Active Filters */}
-        {activeFilters.length > 0 && (
-          <div className="pl-10 pr-10 pt-5 pb-7 flex flex-wrap gap-[17px]">
-            {activeFilters.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => removeFilter(f.id)}
-                className="flex items-center gap-1.5 border border-footer px-2.5 py-1.5 texts_13_regular text-head uppercase cursor-pointer hover:bg-secondbg transition-colors"
-              >
-                <XIcon />
-                {f.label}
-              </button>
-            ))}
-            <button
-              onClick={resetFilters}
-              className="flex items-center gap-1.5 border border-footer px-2.5 py-1.5 texts_13_regular text-head uppercase cursor-pointer hover:bg-secondbg transition-colors"
+              {/* Total */}
+              <div className="flex items-center justify-between py-3.5">
+                <span className="text-sm text-head leading-6 font-medium uppercase">
+                  Total
+                </span>
+                <span className="text-sm text-head leading-6 font-medium">
+                  ${total.toFixed(2)}
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Checkout Button */}
+            <Link
+              to="/cart/shoping-and-checkout"
+              className="mt-5 block text-center pt-5.25 pb-3.75 bg-head text-white text-sm font-medium leading-6 hover:bg-[#DB4444] transition-all"
             >
-              <XIcon />
-              RESET FILTER
-            </button>
+              PROCEED TO CHECKOUT
+            </Link>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center py-20 px-6 bg-[#f9f9f9] rounded-lg border-2 border-dashed border-gray-300"
+        >
+          <div className="mb-6 bg-white p-5 rounded-full shadow-md">
+            <svg
+              className="w-16 h-16 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-[22px] font-bold text-gray-800 mb-2">
+            Your Cart is Empty
+          </h2>
+          <p className="text-gray-500 mb-8 text-center">
+            Add some products to your cart to see them here.
+          </p>
+          <Link
+            to="/shop"
+            className="bg-[#DB4444] text-white px-10 py-3 rounded-sm hover:bg-black transition-all text-[14px] font-bold"
+          >
+            Go Shopping
+          </Link>
+        </motion.div>
+      )}
+    </>
   );
 };
 
-export default ShopFilter;
+export default Cart;

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { HiCheck } from "react-icons/hi";
 import { LiaDollarSignSolid } from "react-icons/lia";
-import { useCartStore } from "../cart/Cart";
+import  useCartStore  from "../cart/Cart";
 
 // CartLayout provides: <section>, <div className="container">, <h1>, <StepIndicator>
 const ShopInfo = () => {

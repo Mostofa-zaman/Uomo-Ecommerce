@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LiaDollarSignSolid } from "react-icons/lia";
-import { useCartStore } from "../cart/Cart";
+import  useCartStore  from "../cart/Cart";
 import { FaAngleDown } from "react-icons/fa6";
 
 // ─── Main ShopCheckout ─────────────────────────────────────────────────────────
