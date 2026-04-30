@@ -1,14 +1,13 @@
+import Footer from "@/component/common/Footer";
+import Navbar from "@/component/common/navbar/Navbar";
 import { Outlet } from "react-router-dom";
 
-import Navbar from "@/component/common/navbar/Navbar";
-import Footer from "@/component/common/Footer";
-
-const RootLayout = () => {
+const Rootlayout = () => {
   return (
     <>
       <Navbar />
 
-      <main className="min-h-screen">
+      <main>
         <Outlet />
       </main>
 
@@ -17,4 +16,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default Rootlayout;
