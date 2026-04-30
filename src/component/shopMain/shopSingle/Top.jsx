@@ -1,7 +1,5 @@
 import Container from "@/component/common/Container";
 import Images from "@/component/common/Images";
-import sssOne from "@/assets/images/sssOne.png";
-import ssd from "@/assets/images/ssd.png";
 import zoomIcon from "@/assets/images/zoomIcon.png";
 import { MdNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
@@ -13,22 +11,30 @@ import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import { useState } from "react";
 import AddToCart from "../addToCart/AddToCart";
+import { Link } from "react-router-dom";
+import useCartStore from "@/store/cartSlice";
 
-const Top = () => {
-  //for manage state
-  let [count, setCount] = useState(3);
+const Top = ({ product }) => {
+  // for manage state
+  let [count, setCount] = useState(1);
   const [open, isOpen] = useState(false);
+
+  // for zustand state
+  const addToCart = useCartStore((state) => state.addToCart);
+
  
 
   const handleUnMount = (value) => {
     isOpen(value);
   };
   const handleShow = () => {
+    if (!product?.id) return;
     isOpen(true);
+    addToCart(product);
   };
 
   const handleMinus = () => {
-    if (count > 0) {
+    if (count > 1) {
       setCount(count - 1);
     }
   };
@@ -39,13 +45,13 @@ const Top = () => {
   };
 
   return (
-    <section className="mt-[100px] relative  mb-6  lg:mt-[125px] lg:mb-25">
+    <section className="mt-[100px] relative mb-6 lg:mt-[125px] lg:mb-25">
       {open && (
         <div
           className="fixed z-[999] bg-[#22222258] h-screen w-full top-0 left-0"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="h-full absolute  right-0">
+          <div className="h-full absolute right-0">
             <AddToCart unMount={handleUnMount} />
           </div>
         </div>
@@ -54,20 +60,17 @@ const Top = () => {
       <Container>
         <div className="flex flex-col xl:flex-row gap-y-8 xl:gap-x-15">
           {/* Left Side: Images */}
-          <div className="flex flex-col-reverse xl:flex-row gap-2.5 ">
-            <div className="flex xl:flex-col gap-2.5 overflow-x-auto lg:overflow-visible ">
-              <div className="min-w-[80px] xl:w-auto">
-                <Images imgSrc={sssOne} />
-              </div>
-              <div className="min-w-[80px] xl:w-auto">
-                <Images imgSrc={sssOne} />
-              </div>
-              <div className="min-w-[80px] xl:w-auto">
-                <Images imgSrc={sssOne} />
-              </div>
-              <div className="min-w-[80px] xl:w-auto">
-                <Images imgSrc={sssOne} />
-              </div>
+          <div className="flex flex-col-reverse xl:flex-row gap-2.5">
+            {/* Thumbnail List */}
+            <div className="flex xl:flex-col gap-2.5 overflow-x-auto lg:overflow-visible">
+              {product?.images?.map((img, index) => (
+                <div
+                  key={index}
+                  className="min-w-[60px] w-[60px] h-[60px] sm:min-w-[70px] sm:w-[70px] sm:h-[70px] xl:w-[80px] xl:h-[80px] shrink-0"
+                >
+                  <Images imgSrc={img} className="w-full h-full object-cover" />
+                </div>
+              ))}
             </div>
 
             {/* Main Slider */}
@@ -82,13 +85,13 @@ const Top = () => {
                 slidesPerView={1}
                 className="w-full h-auto"
               >
-                {[1, 2, 3].map((_, index) => (
+                {product?.images?.map((img, index) => (
                   <SwiperSlide
                     key={index}
                     className="relative flex justify-center items-center bg-[#F5F5F5]"
                   >
                     <Images
-                      imgSrc={ssd}
+                      imgSrc={img}
                       className="w-full h-auto object-contain"
                     />
                     <Images
@@ -112,7 +115,10 @@ const Top = () => {
           {/* Right Side: Product Details */}
           <div className="text-start px-4 md:px-20 lg:px-0">
             <div className="hidden xl:flex justify-between items-center mb-10">
-              <h4 className="texts_14_medium text-head">HOME / THE SHOP</h4>
+              <h4 className="texts_14_medium text-head">
+                {" "}
+                <Link to={"/"}>HOME </Link>/ THE SHOP
+              </h4>
               <div className="flex gap-x-6">
                 <button className="flex items-center gap-x-1 texts_14_medium cursor-pointer text-head">
                   <GrFormPrevious /> PREV
@@ -123,17 +129,18 @@ const Top = () => {
               </div>
             </div>
 
+            {/* ← dynamic data শুরু */}
             <h3 className="text-xl xl:head_26_regular font-normal text-head">
-              Lightweight Puffer Jacket With a Hood
+              {product?.title}
             </h3>
-            <h4 className="text-[22px] font-medium text-head mt-2">$449</h4>
+            <h4 className="text-[22px] font-medium text-head mt-2">
+              ${product?.price}
+            </h4>
 
             <p className="texts_14_regular text-head max-w-125 leading-6 pt-4 lg:pt-6.25">
-              Phasellus sed volutpat orci. Fusce eget lore mauris vehicula
-              elementum gravida nec dui. Aenean aliquam varius ipsum, non
-              ultricies tellus sodales eu. Donec dignissim viverra nunc, ut
-              aliquet magna posuere eget.
+              {product?.description}
             </p>
+            {/* ← dynamic data শেষ */}
 
             {/* Buttons Container */}
             <div className="flex items-center gap-x-2.5 lg:gap-x-5 my-6 lg:my-8">
@@ -154,7 +161,7 @@ const Top = () => {
                 </button>
               </div>
               <button
-                className="h-12 lg:w-[280px] lg:h-[60px] bg-head text-white text-[12px] lg:texts_14_medium  tracking-widest cursor-pointer uppercase px-10 lg:px-0"
+                className="h-12 lg:w-[280px] lg:h-[60px] bg-head text-white text-[12px] lg:texts_14_medium tracking-widest cursor-pointer uppercase px-10 lg:px-0"
                 onClick={handleShow}
               >
                 ADD TO CART
@@ -166,8 +173,7 @@ const Top = () => {
               <button className="text-head text-[13px] font-medium flex items-center gap-x-2 uppercase relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-[80%] after:border-b-2 after:border-head">
                 <FaRegHeart /> Add to wishlist
               </button>
-
-              <button className="text-head text-[13px] font-medium flex items-center gap-x-2 uppercase ">
+              <button className="text-head text-[13px] font-medium flex items-center gap-x-2 uppercase">
                 <BsShare /> Share
               </button>
             </div>
@@ -175,17 +181,15 @@ const Top = () => {
             {/* Meta Info */}
             <div className="space-y-1 mt-8">
               <h5 className="texts_13_regular text-[#767676]">
-                SKU: <span className="text-head">N/A</span>
+                SKU: <span className="text-head">{product?.sku}</span>
               </h5>
               <h5 className="texts_13_regular text-[#767676]">
                 Categories:{" "}
-                <span className="text-head">
-                  Casual & Urban Wear, Jackets, Men
-                </span>
+                <span className="text-head">{product?.category}</span>
               </h5>
               <h5 className="texts_13_regular text-[#767676]">
                 Tags:{" "}
-                <span className="text-head">biker, black, bomber, leather</span>
+                <span className="text-head">{product?.tags?.join(", ")}</span>
               </h5>
             </div>
           </div>
