@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { HiCheck } from "react-icons/hi";
 import { LiaDollarSignSolid } from "react-icons/lia";
-import  useCartStore  from "../cart/Cart";
+import useCartStore from "@/store/cartSlice";
 
 // CartLayout provides: <section>, <div className="container">, <h1>, <StepIndicator>
 const ShopInfo = () => {
-  const { items: cartItems, clearCart } = useCartStore();
+  const cartItems = useCartStore((state) => state.cartItems);
+  const clearCart = useCartStore((state) => state.clearCart);
 
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
