@@ -1,6 +1,3 @@
-import CookieConsent from "@/component/common/CookieConsent ";
-import NewsletterPopup from "@/component/common/Newsletterpopup";
-import SingleBlog from "@/component/common/SingleBlog";
 import Banner from "@/component/layouts/home/Banner";
 import Collection from "@/component/layouts/home/Collection";
 import Countdown from "@/component/layouts/home/Countdown";
@@ -9,7 +6,12 @@ import LimitedEdition from "@/component/layouts/home/LimitedEdition";
 import Products from "@/component/layouts/home/Products";
 import Support from "@/component/layouts/home/Support";
 import Uomo from "@/component/layouts/home/Uomo";
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
+
+const NewsletterPopup = lazy(
+  () => import("@/component/common/Newsletterpopup"),
+);
+const CookieConsent = lazy(() => import("@/component/common/CookieConsent "));
 
 const Home = () => {
   const [showNewsletter, setShowNewsletter] = useState(false);
@@ -30,8 +32,16 @@ const Home = () => {
   }, []);
   return (
     <>
-      {showNewsletter && <NewsletterPopup />}
-      {showCookie && <CookieConsent />}
+      {showNewsletter && (
+        <Suspense fallback={null}>
+          <NewsletterPopup />
+        </Suspense>
+      )}
+      {showCookie && (
+        <Suspense fallback={null}>
+          <CookieConsent />
+        </Suspense>
+      )}
       <Banner />
       <Collection />
       <Products />
