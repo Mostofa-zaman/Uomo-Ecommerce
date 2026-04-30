@@ -1,61 +1,59 @@
-import { useMemo } from "react";
-
 import useBrandItems from "@/store/Brand";
 import useCategory from "@/store/category";
 import usePriceValue from "@/store/PriceRanger";
 import useSearchingItems from "@/store/searchingItems";
 import useShortItem from "@/store/short";
+import { useMemo } from "react";
 
 const useFilteredProducts = (allProducts) => {
-  // Zustand state
+  // data comes from zustand storage
   const searchValues = useSearchingItems((state) => state.searchValues);
   const category = useCategory((state) => state.category);
   const brandValue = useBrandItems((state) => state.brandValue);
   const maxValue = usePriceValue((state) => state.maxValue);
   const shortItem = useShortItem((state) => state.shortItem);
 
-  const filteredProducts = useMemo(() => {
-    if (!Array.isArray(allProducts)) return [];
+
+  const filtered = useMemo(() => {
+    if (!allProducts) return [];
 
     let result = [...allProducts];
 
-    // 🔍 Search filter
-    if (searchValues?.trim()) {
-      const searchWords = searchValues.split(" ").filter(Boolean);
+    // search logic
+    if (searchValues) {
+      const currentSearchItems = searchValues.split(" ").filter(Boolean);
 
-      result = result.filter((item) => {
+      result = result.filter((sItems) => {
         const text = `
-          ${item?.title}
-          ${item?.description}
-          ${item?.category}
-          ${item?.brand}
-          ${item?.tags?.join(" ") || ""}
+          ${sItems?.title}
+          ${sItems?.description}
+          ${sItems?.category}
+          ${sItems?.brand}
+          ${sItems?.tags?.join(" ")}
         `.toLowerCase();
 
-        return searchWords.every((word) =>
-          text.includes(word.toLowerCase())
+        return currentSearchItems.every((word) =>
+          text.includes(word.toLowerCase()),
         );
       });
     }
 
-    // 📂 Category filter
+    // category logic
     if (category) {
-      result = result.filter((item) => item?.category === category);
+      result = result.filter((cat) => cat?.category === category);
     }
 
-    // 🏷️ Brand filter
-    if (brandValue?.length) {
-      result = result.filter((item) =>
-        brandValue.includes(item?.brand)
-      );
+    // brand logic
+    if (brandValue && brandValue.length > 0) {
+      result = result.filter((b) => brandValue.includes(b.brand));
     }
 
-    // 💰 Price filter
+    // price logic
     if (maxValue) {
-      result = result.filter((item) => item?.price <= maxValue);
+      result = result.filter((p) => p.price <= maxValue);
     }
 
-    // 🔃 Sorting
+    // sorting logic
     switch (shortItem) {
       case "price-low":
         result = [...result].sort((a, b) => a.price - b.price);
@@ -71,17 +69,13 @@ const useFilteredProducts = (allProducts) => {
 
       case "latest":
         result = [...result].sort(
-          (a, b) =>
-            new Date(b?.meta?.createdAt) -
-            new Date(a?.meta?.createdAt)
+          (a, b) => new Date(b.meta.createdAt) - new Date(a.meta.createdAt),
         );
         break;
 
       case "popularity":
         result = [...result].sort(
-          (a, b) =>
-            (b?.reviews?.length || 0) -
-            (a?.reviews?.length || 0)
+          (a, b) => b.reviews?.length - a.reviews?.length, // reviews count দিয়ে sort
         );
         break;
 
@@ -90,9 +84,9 @@ const useFilteredProducts = (allProducts) => {
     }
 
     return result;
-  }, [allProducts, searchValues, category, brandValue, maxValue, shortItem]);
+  }, [searchValues, category, brandValue, maxValue, shortItem, allProducts]);
 
-  return filteredProducts;
+  return filtered;
 };
 
 export default useFilteredProducts;
