@@ -110,4 +110,3 @@ const Store_location = () => {
 };
 
 export default Store_location;
-

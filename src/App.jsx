@@ -1,115 +1,102 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Rootlayout from "@/rootlayout/Rootlayout";
-import Home from "@/page/Home";
-import Shop from "@/page/Shop";
-import Cart from "./component/shopMain/shopPage/cart/Cart";
-import CollectionPg from "./component/collection/CollectionComp";
-import Journal from "./page/Journal";
-import NotFound from "./page/NotFound";
-import ShopSinglePg from "./page/ShopSinglePg";
-import OrderTracking from "./component/shopMain/shopPage/orderTracking/OrderTracking";
-import ShopCheckout from "./component/shopMain/shopPage/shopCheckout/ShopCheckout";
-import ShopInfo from "./component/shopMain/shopPage/shopInfo/ShopInfo";
-import DashboardLayout from "./component/mainDashboard/rootDashboard/DashboardLayout";
-import DashboardAccount from "./component/mainDashboard/dashborarAllComponent/DashboardAccount";
-import DashboardOrder from "./component/mainDashboard/dashborarAllComponent/DashboardOrder";
-import DashboardAddress from "./component/mainDashboard/dashborarAllComponent/DashboardAddress";
-import DashboardAccDetails from "./component/mainDashboard/dashborarAllComponent/DashboardAccDetails";
-import DashboardWishlist from "./component/mainDashboard/dashborarAllComponent/DashboardWishlist";
-import DashboardDownload from "./component/mainDashboard/dashborarAllComponent/DashboardDownload";
-import LogOut from "./component/mainDashboard/dashborarAllComponent/LogOut";
-import CartLayout from "./component/shopMain/shopPage/cartLayout/CartLayout";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Faq from "./page/Faq";
-import Terms from "./page/Terms";
-import ComingSoonPg from "./page/ComingSoonPg";
-import RegiLog from "./component/auth/regiLog/RegiLog";
-import SingleBlog from "./component/common/SingleBlog";
-import LookBookPg from "./page/LookBookPg";
-import AboutPg from "./page/AboutPg";
-import ContactUsPg from "./page/ContactUsPg";
-import StoreLocatorPg from "./page/StoreLocatorPg";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+// ─── Lazy Imports ───────────────────────────────────────────────
+const Home = lazy(() => import("@/page/Home"));
+const Shop = lazy(() => import("@/page/Shop"));
+const Journal = lazy(() => import("@/page/Journal"));
+const NotFound = lazy(() => import("@/page/NotFound"));
+const ShopSinglePg = lazy(() => import("@/page/ShopSinglePg"));
+const Faq = lazy(() => import("@/page/Faq"));
+const Terms = lazy(() => import("@/page/Terms"));
+const ComingSoonPg = lazy(() => import("@/page/ComingSoonPg"));
+const LookBookPg = lazy(() => import("@/page/LookBookPg"));
+const AboutPg = lazy(() => import("@/page/AboutPg"));
+const ContactUsPg = lazy(() => import("@/page/ContactUsPg"));
+const StoreLocatorPg = lazy(() => import("@/page/StoreLocatorPg"));
+const CollectionPg = lazy(() => import("@/component/collection/CollectionComp"));
+
+const CartLayout = lazy(() => import("@/component/shopMain/shopPage/cartLayout/CartLayout"));
+const Cart = lazy(() => import("@/component/shopMain/shopPage/cart/Cart"));
+const ShopCheckout = lazy(() => import("@/component/shopMain/shopPage/shopCheckout/ShopCheckout"));
+const ShopInfo = lazy(() => import("@/component/shopMain/shopPage/shopInfo/ShopInfo"));
+const OrderTracking = lazy(() => import("@/component/shopMain/shopPage/orderTracking/OrderTracking"));
+
+const DashboardLayout = lazy(() => import("@/component/mainDashboard/rootDashboard/DashboardLayout"));
+const DashboardAccount = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardAccount"));
+const DashboardOrder = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardOrder"));
+const DashboardAddress = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardAddress"));
+const DashboardAccDetails = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardAccDetails"));
+const DashboardWishlist = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardWishlist"));
+const DashboardDownload = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/DashboardDownload"));
+const LogOut = lazy(() => import("@/component/mainDashboard/dashborarAllComponent/LogOut"));
+
+const RegiLog = lazy(() => import("@/component/auth/regiLog/RegiLog"));
+const SingleBlog = lazy(() => import("@/component/common/SingleBlog"));
+
+// ─── Non-lazy ──────────────────────────────────────────────────
+import Rootlayout from "@/rootlayout/Rootlayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import SectionSkeleton from "./component/common/skeleton/SectionSkeleton";
+
+// ─── Reusable Suspense Wrapper ──────────────────────────────────
+const S = ({ children }) => (
+  <Suspense fallback={<SectionSkeleton />}>{children}</Suspense>
+);
+
+// ─── Router ────────────────────────────────────────────────────
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Rootlayout />,
     children: [
-      // for home route
-      { index: true, element: <Home /> },
+      { index: true,                  element: <S><Home /></S> },
+      { path: "collection",           element: <S><CollectionPg /></S> },
+      { path: "journal",              element: <S><Journal /></S> },
+      { path: "lookbook",             element: <S><LookBookPg /></S> },
+      { path: "shop",                 element: <S><Shop /></S> },
+      { path: "/shop-single/:id",     element: <S><ShopSinglePg /></S> },
+      { path: "contact",              element: <S><ContactUsPg /></S> },
+      { path: "store-locator",        element: <S><StoreLocatorPg /></S> },
 
-      // for collection route
-      { path: "collection", element: <CollectionPg /> },
-
-      // for journal route
-      { path: "journal", element: <Journal /> },
-
-      //for lookbook route
-      { path: "lookbook", element: <LookBookPg /> },
-
-      // for shop page route
-      { path: "shop", element: <Shop /> },
-      { path: "shop-single", element: <ShopSinglePg /> },
-      { path: "contact", element: <ContactUsPg /> },
-      { path: "store-locator", element: <StoreLocatorPg /> },
-
-      // for shopping cart route
       {
         path: "cart",
-        element: <CartLayout />,
+        element: <S><CartLayout /></S>,
         children: [
-          { index: true, element: <Cart /> },
-          { path: "/cart/shoping-and-checkout", element: <ShopCheckout /> },
-          { path: "/cart/order-recived", element: <ShopInfo /> },
-          { path: "/cart/order-tracking", element: <OrderTracking /> },
+          { index: true,                          element: <S><Cart /></S> },
+          { path: "/cart/shoping-and-checkout",   element: <S><ShopCheckout /></S> },
+          { path: "/cart/order-recived",          element: <S><ShopInfo /></S> },
+          { path: "/cart/order-tracking",         element: <S><OrderTracking /></S> },
         ],
       },
 
-      //  for dashboard route
       {
         path: "/dashboard",
-        element: <DashboardLayout />,
+        element: <S><DashboardLayout /></S>,
         children: [
-          { index: true, element: <DashboardAccount /> },
-          { path: "/dashboard/order", element: <DashboardOrder /> },
-          { path: "/dashboard/address", element: <DashboardAddress /> },
-          {
-            path: "/dashboard/account-details",
-            element: <DashboardAccDetails />,
-          },
-          { path: "/dashboard/wishlist", element: <DashboardWishlist /> },
-          { path: "/dashboard/downloads", element: <DashboardDownload /> },
+          { index: true,                          element: <S><DashboardAccount /></S> },
+          { path: "/dashboard/order",             element: <S><DashboardOrder /></S> },
+          { path: "/dashboard/address",           element: <S><DashboardAddress /></S> },
+          { path: "/dashboard/account-details",   element: <S><DashboardAccDetails /></S> },
+          { path: "/dashboard/wishlist",          element: <S><DashboardWishlist /></S> },
+          { path: "/dashboard/downloads",         element: <S><DashboardDownload /></S> },
         ],
       },
-      // for Faq
-      { path: "faq", element: <Faq /> },
-      // for Faq
-      { path: "/about", element: <AboutPg /> },
 
-      //for logout
-      { path: "/logout", element: <LogOut /> },
-
-      // for blog-post
-      { path: "/elements/blog-posts", element: <Journal /> },
-      { path: "/elements/blog", element: <SingleBlog /> },
-      // for terms and condition
-      { path: "/elements/terms", element: <Terms /> },
-
-      // for comming soon pages route
-      { path: "coming-soon", element: <ComingSoonPg /> },
-
-      //Regilogin page
-      { path: "login-register", element: <RegiLog /> },
-
-      // 404 not found
-      { path: "*", element: <NotFound /> },
+      { path: "faq",                  element: <S><Faq /></S> },
+      { path: "/about",               element: <S><AboutPg /></S> },
+      { path: "/logout",              element: <S><LogOut /></S> },
+      { path: "/elements/blog-posts", element: <S><Journal /></S> },
+      { path: "/elements/blog",       element: <S><SingleBlog /></S> },
+      { path: "/elements/terms",      element: <S><Terms /></S> },
+      { path: "coming-soon",          element: <S><ComingSoonPg /></S> },
+      { path: "login-register",       element: <S><RegiLog /></S> },
+      { path: "*",                    element: <S><NotFound /></S> },
     ],
   },
 ]);
 
-// Create a client
 const queryClient = new QueryClient();
 
 const App = () => {

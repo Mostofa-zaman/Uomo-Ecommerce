@@ -1,8 +1,6 @@
 import Container from "@/component/common/Container";
 import Product from "@/component/common/Product";
 import React, { useRef } from "react";
-import producttwo from "@/assets/images/productstwo.png";
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";

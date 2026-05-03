@@ -3,8 +3,8 @@ import Images from "@/component/common/Images";
 import React from "react";
 import image from "@/assets/images/uomoImg.png";
 import useAllProductThirty from "@/coustomHook/useAllProductThirty";
-import ProductImageSkeleton from "@/component/common/ProductImageSkeleton";
-import ProductSkeleton from "@/component/common/ProductSkeleton";
+import ProductImageSkeleton from "@/component/common/skeleton/ProductImageSkeleton";
+import ProductSkeleton from "@/component/common/skeleton/ProductSkeleton";
 
 const Uomo = () => {
   // for api
