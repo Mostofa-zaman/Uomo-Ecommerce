@@ -8,9 +8,6 @@ const Navbar = () => {
   // for locations
   const { pathname } = useLocation();
 
- 
-
-
   return (
     <div className="fixed top-0 left-0 w-full z-[800] ">
       <div

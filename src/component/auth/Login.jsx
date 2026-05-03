@@ -1,41 +1,44 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-
 import allIcons from "@/helper/iconProvider";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuthStore from "../../store/authSlice";
 
 const Login = ({ unMount }) => {
   const { close } = allIcons;
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
+  //Containe er bahire click korle e cole jabe
   const navtabRef = useRef(null);
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      if (navtabRef.current && !navtabRef.current.contains(event.target)) {
+        unMount(null);
+      }
+    };
 
+    document.addEventListener("mousedown", handleDocumentClick);
+    return () => {
+      document.removeEventListener("mousedown", handleDocumentClick);
+    };
+  }, [unMount]);
+  // ══ STATE ══
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (navtabRef.current && !navtabRef.current.contains(event.target)) {
-        unMount(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [unMount]);
-
+  // ══ HANDLERS ══
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [name]: value });
   };
 
   const validate = () => {
-    const newErrors = {};
+    let newErrors = {};
     if (!formData.email) newErrors.email = "Please Enter Your Email";
     if (!formData.password) newErrors.password = "Please Enter Your Password";
     setErrors(newErrors);
@@ -43,118 +46,126 @@ const Login = ({ unMount }) => {
   };
 
   const handleSubmit = () => {
-    if (!validate()) return;
-    signInWithEmailAndPassword(auth, formData.email, formData.password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        setErrors({});
-        setLoginSuccess(true);
-        setUser({ uid: user.uid, email: user.email, displayName: user.displayName });
-        setTimeout(() => {
-          unMount(null);
-          navigate("/");
-        }, 1500);
-      })
-      .catch(() => setErrors({ firebase: "Invalid email or password" }));
+    if (validate()) {
+      signInWithEmailAndPassword(auth, formData.email, formData.password)
+        .then((userCredential) => {
+          setErrors({});
+          setLoginSuccess(true);
+          const user = userCredential.user;
+          setUser({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+          });
+          setTimeout(() => {
+            unMount(null);
+            navigate("/");
+          }, 1500);
+        })
+        .catch(() => setErrors({ firebase: "Invalid email or password" }));
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:py-16 lg:py-24">
-      <div
-        ref={navtabRef}
-        className="w-full sm:max-w-sm md:max-w-md lg:max-w-lg bg-white rounded-xl shadow-md p-6 sm:p-8 lg:p-10"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <p className="texts_16_medium text-head text-sm sm:text-base">LOGIN</p>
-          <span className="text-xl sm:text-2xl cursor-pointer" onClick={() => unMount(null)}>
-            {close}
-          </span>
+    <div ref={navtabRef} className="w-105 h-full bg-white p-10">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <p className="texts_16_medium text-head">LOGIN</p>
+        <span className="text-2xl cursor-pointer" onClick={() => unMount(null)}>
+          {close}
+        </span>
+      </div>
+
+      {/* Success Message */}
+      {loginSuccess && (
+        <div className="bg-green-50 border border-footer text-green-700 px-4 py-3 text-sm mb-5">
+          ✅ Login successful! Redirecting...
+        </div>
+      )}
+
+      {/* Form */}
+      <div className="flex flex-col gap-y-5">
+        {/* Email */}
+        <div className="flex flex-col gap-1">
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Username or email address *"
+            className="w-full border-2 border-footer px-4 py-4 texts_14_regular text-head placeholder:text-second"
+          />
+          {errors.email && (
+            <span className="text-xs text-red-500">{errors.email}</span>
+          )}
         </div>
 
-        {/* Success Message */}
-        {loginSuccess && (
-          <div className="bg-green-50 border border-footer text-green-700 px-4 py-3 text-sm mb-5 rounded">
-            ✅ Login successful! Redirecting...
-          </div>
-        )}
-
-        {/* Form */}
-        <div className="flex flex-col gap-3 sm:gap-4">
-
-          {/* Email */}
-          <div className="flex flex-col gap-1">
+        {/* Password */}
+        <div className="flex flex-col gap-1">
+          <fieldset className="border-2 border-head px-4 pt-1 pb-2 relative">
+            <legend className="texts_14_regular text-head px-1">
+              Password *
+            </legend>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
               onChange={handleChange}
-              placeholder="Username or email address *"
-              className="w-full border-2 border-footer px-3 sm:px-4 py-3 sm:py-4 texts_14_regular text-head placeholder:text-second rounded"
+              className="w-full texts_14_regular text-head bg-transparent"
             />
-            {errors.email && <span className="text-xs sm:text-sm text-red-500">{errors.email}</span>}
-          </div>
-
-          {/* Password */}
-          <div className="flex flex-col gap-1">
-            <fieldset className="relative border-2 border-head px-3 sm:px-4 pt-1 pb-2 rounded">
-              <legend className="texts_14_regular text-head px-1">Password *</legend>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-transparent texts_14_regular text-head focus:outline-none"
-              />
-              <span
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-              >
-                {showPassword ? <FaEye /> : <FaEyeSlash />}
-              </span>
-            </fieldset>
-            {errors.password && <span className="text-xs sm:text-sm text-red-500">{errors.password}</span>}
-            {errors.firebase && <span className="text-xs sm:text-sm text-red-500">{errors.firebase}</span>}
-          </div>
-
-          {/* Remember + Forgot */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={() => setRemember((prev) => !prev)}
-                className="w-4 h-4 border border-footer accent-head cursor-pointer"
-              />
-              <span className="texts_14_regular text-head text-sm sm:text-base">Remember me</span>
-            </label>
-            <Link
-              to="/lost-password"
-              className="texts_14_regular text-head underline underline-offset-2 text-sm sm:text-base"
+            <span
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
             >
-              Lost password?
-            </Link>
-          </div>
-
-          {/* Submit */}
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-head text-white py-3 sm:py-4 texts_14_medium text-sm sm:text-base rounded hover:bg-[#DB4444] transition"
-          >
-            LOG IN
-          </button>
-
-          {/* Footer */}
-          <p className="texts_14_regular text-second text-center text-xs sm:text-sm">
-            No account yet?{" "}
-            <Link
-              to="/login-register"
-              className="text-head underline underline-offset-2"
-            >
-              Create Account
-            </Link>
-          </p>
+              {showPassword ? <FaEye /> : <FaEyeSlash />}
+            </span>
+          </fieldset>
+          {errors.password && (
+            <span className="text-xs text-red-500">{errors.password}</span>
+          )}
+          {errors.firebase && (
+            <span className="text-xs text-red-500">{errors.firebase}</span>
+          )}
         </div>
+
+        {/* Remember & Lost password */}
+        <div className="flex justify-between items-center">
+          <label className="flex items-center gap-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={() => setRemember(!remember)}
+              className="w-4 h-4 border border-footer accent-head cursor-pointer"
+            />
+            <span className="texts_14_regular text-head">Remember me</span>
+          </label>
+          <Link
+            to="/lost-password"
+            className="texts_14_regular text-head underline underline-offset-2"
+          >
+            Lost password?
+          </Link>
+        </div>
+
+        {/* Login Button */}
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-head text-white pt-5.5 pb-3.5
+          hover:bg-[#DB4444] transition-all leading-6 cursor-pointer texts_14_medium"
+        >
+          LOG IN
+        </button>
+
+        {/* Create Account */}
+        <p className="texts_14_regular text-second text-center">
+          No account yet?{" "}
+          <Link
+            to="/login-register"
+            className="text-head underline underline-offset-2"
+          >
+            Create Account
+          </Link>
+        </p>
       </div>
     </div>
   );
